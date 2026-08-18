@@ -17,15 +17,25 @@ import {
   totalWeeks,
   type CareerPath,
   type Course,
-  type Module,
   type ModuleCategory,
   type TopicId,
 } from "@/data/programs";
-import { BriefcaseIcon, BookStackIcon, MedalIcon, OpenBookIcon, ChevronDownIcon, GridIcon, ChartBarIcon, TreeIcon, OrbitIcon, GradCapIcon, BuildingIcon, LinkNodesIcon } from "./icons";
-
-function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
+import { detailHref, slugify } from "@/lib/catalog";
+import {
+  BriefcaseIcon,
+  BookStackIcon,
+  MedalIcon,
+  OpenBookIcon,
+  ChevronDownIcon,
+  GridIcon,
+  ChartBarIcon,
+  TreeIcon,
+  OrbitIcon,
+  GradCapIcon,
+  BuildingIcon,
+  LinkNodesIcon,
+  ArrowRightIcon,
+} from "./icons";
 
 type TabId = "topics" | "career-paths" | "skill-paths" | "technology-tracks" | "courses";
 type ItemType = "Career Path" | "Skill Path" | "Technology Track" | "Course";
@@ -85,7 +95,7 @@ function StatRow({ left, right }: { left: string; right: string }) {
   );
 }
 
-function ModuleList({ modules }: { modules: Module[] }) {
+function ModuleList({ modules }: { modules: { name: string; hours: number }[] }) {
   return (
     <ul className="mt-3 flex flex-col gap-2 border-t border-black/10 pt-3">
       {modules.map((m) => (
@@ -98,19 +108,16 @@ function ModuleList({ modules }: { modules: Module[] }) {
   );
 }
 
-function TalkToUsLink() {
+function ViewDetailsLink({ href }: { href: string }) {
   return (
-    <Link href="/#reach-out" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-600 transition hover:text-teal-500">
-      Talk to Us
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 8h11.5M9 3.5 13.5 8 9 12.5" />
-      </svg>
+    <Link href={href} className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-600 transition hover:text-teal-500">
+      View details
+      <ArrowRightIcon />
     </Link>
   );
 }
 
 function CareerPathCard({ path, highlighted }: { path: CareerPath; highlighted: boolean }) {
-  const [open, setOpen] = useState(false);
   const modules = path.moduleCategory ? modulesFor(path.moduleCategory) : [];
   const hasCurriculum = modules.length > 0;
 
@@ -120,22 +127,14 @@ function CareerPathCard({ path, highlighted }: { path: CareerPath; highlighted: 
         <span className="h-2 w-2 rounded-full bg-teal-500" />
         Career Path
       </span>
-      <h3 className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)]">{path.name}</h3>
-      {!hasCurriculum && <p className="mt-2 text-xs text-ink-500">Curriculum in development</p>}
+      <Link href={detailHref("career-paths", slugify(path.name))} className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)] hover:text-teal-600">
+        {path.name}
+      </Link>
+      <p className="mt-2 text-xs text-ink-500">One end-to-end bootcamp enrollment.</p>
 
       <StatRow left="Bootcamp" right={hasCurriculum ? `${totalHours(modules)} hrs · ${totalWeeks(modules)} wks` : "Coming Soon"} />
 
-      {hasCurriculum && (
-        <>
-          <button onClick={() => setOpen((v) => !v)} className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:text-teal-500">
-            {open ? "Hide curriculum" : `View curriculum (${modules.length} courses)`}
-            <ChevronDownIcon className={`transition-transform ${open ? "rotate-180" : ""}`} />
-          </button>
-          {open && <ModuleList modules={modules} />}
-        </>
-      )}
-
-      <TalkToUsLink />
+      <ViewDetailsLink href={detailHref("career-paths", slugify(path.name))} />
     </CardShell>
   );
 }
@@ -151,7 +150,9 @@ function SkillPathCard({ category, highlighted }: { category: ModuleCategory; hi
         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: meta.color }} />
         Skill Path
       </span>
-      <h3 className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)]">{category}</h3>
+      <Link href={detailHref("skill-paths", slugify(category))} className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)] hover:text-teal-600">
+        {category}
+      </Link>
       <p className="mt-2 text-xs leading-relaxed text-ink-500">{meta.blurb}</p>
 
       <StatRow left="Skill Path" right={`${totalHours(modules)} hrs · ${totalWeeks(modules)} wks`} />
@@ -162,37 +163,43 @@ function SkillPathCard({ category, highlighted }: { category: ModuleCategory; hi
       </button>
       {open && <ModuleList modules={modules} />}
 
-      <TalkToUsLink />
+      <ViewDetailsLink href={detailHref("skill-paths", slugify(category))} />
     </CardShell>
   );
 }
 
 function TechTrackCard({ provider, track, highlighted }: { provider: string; track: string; highlighted: boolean }) {
+  const slug = slugify(`${provider}-${track}`);
   return (
-    <CardShell id={`path-${slugify(provider)}-${slugify(track)}`} highlighted={highlighted}>
+    <CardShell id={`path-${slug}`} highlighted={highlighted}>
       <span className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-wide text-teal-600">
         <span className="h-2 w-2 rounded-full bg-teal-500" />
         {provider}
       </span>
-      <h3 className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)]">{track}</h3>
+      <Link href={detailHref("technology-tracks", slug)} className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)] hover:text-teal-600">
+        {track}
+      </Link>
       <p className="mt-2 text-xs text-ink-500">Technology adoption track</p>
       <StatRow left="Technology Track" right="Coming Soon" />
-      <TalkToUsLink />
+      <ViewDetailsLink href={detailHref("technology-tracks", slug)} />
     </CardShell>
   );
 }
 
 function CourseCard({ course, highlighted }: { course: Course; highlighted: boolean }) {
+  const slug = slugify(course.name);
   return (
-    <CardShell id={`path-${slugify(course.name)}`} highlighted={highlighted}>
+    <CardShell id={`path-${slug}`} highlighted={highlighted}>
       <span className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: CATEGORY_META.AI.color }}>
         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CATEGORY_META.AI.color }} />
         Course
       </span>
-      <h3 className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)]">{course.name}</h3>
+      <Link href={detailHref("courses", slug)} className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)] hover:text-teal-600">
+        {course.name}
+      </Link>
       <p className="mt-2 text-xs text-ink-500">For {course.audience.toLowerCase()}</p>
       <StatRow left={course.format} right={`${course.delivery} · ${course.duration}`} />
-      <TalkToUsLink />
+      <ViewDetailsLink href={detailHref("courses", slug)} />
     </CardShell>
   );
 }
@@ -205,15 +212,15 @@ const TAB_COPY: Record<TabId, { title: string; description: string }> = {
   "career-paths": {
     title: "Career paths",
     description:
-      "Multi-week bootcamps that take a team from fundamentals to a deployed, portfolio-ready outcome — each one maps to a role your organization is hiring for.",
+      "Multi-week bootcamps that take a team from fundamentals to a deployed, portfolio-ready outcome — a single end-to-end enrollment, not separate courses.",
   },
   "skill-paths": {
     title: "Skill paths",
-    description: "Focused course bundles that build one specific capability, without the full bootcamp commitment.",
+    description: "Focused bundles of individual courses that build one specific capability, without the full bootcamp commitment.",
   },
   "technology-tracks": {
     title: "Technology tracks",
-    description: "Technology-adoption training on the platforms your team has already licensed — from onboarding through advanced administration.",
+    description: "Technology-adoption training on the platforms your team has already licensed. Pick a provider to see its tracks.",
   },
   courses: {
     title: "Courses",
@@ -358,9 +365,57 @@ function TopicsBrowser({ items }: { items: FlatItem[] }) {
           </div>
         </aside>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {filtered.map((item) => item.render(false))}
-        </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">{filtered.map((item) => item.render(false))}</div>
+      </div>
+    </div>
+  );
+}
+
+function TechnologyTracksBrowser({ highlight }: { highlight: string | null }) {
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+
+  if (!selectedProvider) {
+    return (
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {TECH_PROVIDERS.map((provider) => (
+          <button
+            key={provider.name}
+            onClick={() => setSelectedProvider(provider.name)}
+            className="flex items-center gap-4 rounded-xl border border-black/10 px-5 py-4 text-left transition hover:border-teal-400/50 hover:bg-teal-400/5"
+          >
+            <MedalIcon width={22} height={22} className="shrink-0 text-teal-600" />
+            <span className="flex-1">
+              <span className="block text-sm font-semibold text-[var(--foreground)]">{provider.name}</span>
+              <span className="block text-xs text-ink-500">{provider.tracks.map((t) => t.name).join(" · ")}</span>
+            </span>
+            <span className="shrink-0 text-xs text-ink-500">{provider.tracks.length}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  const provider = TECH_PROVIDERS.find((p) => p.name === selectedProvider)!;
+
+  return (
+    <div className="mt-6">
+      <button onClick={() => setSelectedProvider(null)} className="flex items-center gap-1.5 text-sm font-medium text-teal-600 hover:text-teal-500">
+        <ChevronDownIcon className="rotate-90" />
+        All technologies
+      </button>
+
+      <h3 className="mt-4 text-xl font-semibold text-[var(--foreground)]">{provider.name}</h3>
+      <p className="mt-1 text-sm text-ink-500">{provider.tracks.length} tracks available.</p>
+
+      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {provider.tracks.map((track) => (
+          <TechTrackCard
+            key={track.name}
+            provider={provider.name}
+            track={track.name}
+            highlighted={highlight === `${provider.name} ${track.name}`}
+          />
+        ))}
       </div>
     </div>
   );
@@ -405,9 +460,7 @@ export function ProgramsCatalog() {
           <span className="rounded-full bg-teal-400 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--navy-950)]">New</span>
           <span>Browse the full catalog by topic — career paths, skill paths, and technology tracks side by side.</span>
         </span>
-        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-          <path d="M2 8h11.5M9 3.5 13.5 8 9 12.5" />
-        </svg>
+        <ArrowRightIcon />
       </Link>
 
       <div className="mt-8 flex flex-col gap-2">
@@ -468,31 +521,7 @@ export function ProgramsCatalog() {
             </div>
           )}
 
-          {activeTab === "technology-tracks" && (
-            <>
-              <p className="mt-8 text-sm font-semibold text-[var(--foreground)]">Providers</p>
-              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {TECH_PROVIDERS.map((provider) => (
-                  <div key={provider.name} className="flex items-center justify-center rounded-xl border border-black/10 px-4 py-5 text-base font-bold tracking-tight text-[var(--foreground)]">
-                    {provider.name}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {TECH_PROVIDERS.flatMap((provider) =>
-                  provider.tracks.map((track) => (
-                    <TechTrackCard
-                      key={`${provider.name}-${track.name}`}
-                      provider={provider.name}
-                      track={track.name}
-                      highlighted={highlight === `${provider.name} ${track.name}`}
-                    />
-                  )),
-                )}
-              </div>
-            </>
-          )}
+          {activeTab === "technology-tracks" && <TechnologyTracksBrowser highlight={highlight} />}
 
           {activeTab === "courses" && (
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
