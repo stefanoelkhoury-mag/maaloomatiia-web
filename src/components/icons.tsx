@@ -159,6 +159,36 @@ export function InstagramIcon(props: IconProps) {
   );
 }
 
+export function BriefcaseIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="8" width="18" height="11.5" rx="1.6" />
+      <path d="M8.5 8V6.3A1.8 1.8 0 0 1 10.3 4.5h3.4a1.8 1.8 0 0 1 1.8 1.8V8" />
+      <path d="M3 13.2c2.7 1.4 6 2.1 9 2.1s6.3-.7 9-2.1" />
+      <path d="M10.8 13.4h2.4" />
+    </svg>
+  );
+}
+
+export function BookStackIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4" y="4" width="13" height="4.2" rx="1" />
+      <rect x="4" y="9.9" width="16" height="4.2" rx="1" />
+      <rect x="4" y="15.8" width="10.5" height="4.2" rx="1" />
+    </svg>
+  );
+}
+
+export function OpenBookIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 6.3C10.4 5 8.2 4.3 5.5 4.3v13.8c2.7 0 4.9.7 6.5 2 1.6-1.3 3.8-2 6.5-2V4.3c-2.7 0-4.9.7-6.5 2Z" />
+      <path d="M12 6.3v13.8" />
+    </svg>
+  );
+}
+
 export function ArrowRightIcon(props: IconProps) {
   return (
     <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>

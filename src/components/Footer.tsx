@@ -4,9 +4,9 @@ import { MailIcon, PhoneIcon, LinkedInIcon, InstagramIcon } from "./icons";
 
 const PROGRAMS = [
   { label: "All Programs", href: "/programs" },
-  { label: "Data Engineering Bootcamps", href: "/programs?category=Data+Engineering" },
-  { label: "AI Engineering", href: "/programs?category=AI+Engineering" },
-  { label: "AI for Business Leaders", href: "/programs?category=AI" },
+  { label: "Data Engineering Bootcamps", href: "/programs?tab=career-paths&highlight=Data+Engineering" },
+  { label: "AI Engineering", href: "/programs?tab=career-paths&highlight=AI+Engineering" },
+  { label: "AI for Business Leaders", href: "/programs?tab=courses" },
 ];
 const COMPANY = ["Higher Education", "About", "Partnerships", "Contact"];
 
