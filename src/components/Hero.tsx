@@ -35,7 +35,7 @@ export function Hero() {
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
           <a
-            href="#programs"
+            href="/programs"
             className="w-full rounded-full bg-teal-400 px-7 py-3 text-sm font-semibold text-[var(--navy-950)] transition hover:bg-teal-300 sm:w-auto"
           >
             Find Your Program

@@ -8,15 +8,29 @@ import { ChevronDownIcon } from "./icons";
 const NAV = [
   {
     label: "Programs",
-    items: ["All Programs", "Data Engineering Bootcamps", "AI Engineering", "AI for Business Leaders"],
+    items: [
+      { label: "All Programs", href: "/programs" },
+      { label: "Data Engineering Bootcamps", href: "/programs?category=Data+Engineering" },
+      { label: "AI Engineering", href: "/programs?category=AI+Engineering" },
+      { label: "AI for Business Leaders", href: "/programs?category=AI" },
+    ],
   },
   {
     label: "Solutions",
-    items: ["For Enterprise", "For National Capability Programs", "For Education Partners", "For Individuals"],
+    items: [
+      { label: "For Enterprise", href: "#" },
+      { label: "For National Capability Programs", href: "#" },
+      { label: "For Education Partners", href: "#" },
+      { label: "For Individuals", href: "#" },
+    ],
   },
   {
     label: "Company",
-    items: ["About", "Partnerships", "Contact"],
+    items: [
+      { label: "About", href: "#" },
+      { label: "Partnerships", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
   },
 ];
 
@@ -52,13 +66,13 @@ export function Header() {
                 <div className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3">
                   <div className="rounded-xl border border-white/10 bg-[var(--navy-900)] p-2 shadow-xl shadow-black/30">
                     {menu.items.map((item) => (
-                      <a
-                        key={item}
-                        href="#"
+                      <Link
+                        key={item.label}
+                        href={item.href}
                         className="block rounded-lg px-3 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
                       >
-                        {item}
-                      </a>
+                        {item.label}
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -93,9 +107,9 @@ export function Header() {
               <p className="mb-2 text-sm font-medium text-white">{menu.label}</p>
               <div className="flex flex-col gap-2 pl-2">
                 {menu.items.map((item) => (
-                  <a key={item} href="#" className="text-sm text-white/70">
-                    {item}
-                  </a>
+                  <Link key={item.label} href={item.href} className="text-sm text-white/70">
+                    {item.label}
+                  </Link>
                 ))}
               </div>
             </div>

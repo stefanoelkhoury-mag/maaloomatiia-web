@@ -1,7 +1,13 @@
+import Link from "next/link";
 import { Logo } from "./Logo";
 import { MailIcon, PhoneIcon, LinkedInIcon, InstagramIcon } from "./icons";
 
-const PROGRAMS = ["All Programs", "Data Engineering Bootcamps", "AI Engineering", "AI for Business Leaders"];
+const PROGRAMS = [
+  { label: "All Programs", href: "/programs" },
+  { label: "Data Engineering Bootcamps", href: "/programs?category=Data+Engineering" },
+  { label: "AI Engineering", href: "/programs?category=AI+Engineering" },
+  { label: "AI for Business Leaders", href: "/programs?category=AI" },
+];
 const COMPANY = ["Higher Education", "About", "Partnerships", "Contact"];
 
 export function Footer() {
@@ -33,10 +39,10 @@ export function Footer() {
             <p className="eyebrow">Programs</p>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-ink-300">
               {PROGRAMS.map((item) => (
-                <li key={item}>
-                  <a href="#" className="transition hover:text-white">
-                    {item}
-                  </a>
+                <li key={item.label}>
+                  <Link href={item.href} className="transition hover:text-white">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
