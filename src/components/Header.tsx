@@ -10,6 +10,7 @@ const NAV = [
     label: "Programs",
     items: [
       { label: "All Programs", href: "/programs" },
+      { label: "Browse by Topic", href: "/programs?tab=topics" },
       { label: "Data Engineering Bootcamps", href: "/programs?tab=career-paths&highlight=Data+Engineering" },
       { label: "AI Engineering", href: "/programs?tab=career-paths&highlight=AI+Engineering" },
       { label: "AI for Business Leaders", href: "/programs?tab=courses" },

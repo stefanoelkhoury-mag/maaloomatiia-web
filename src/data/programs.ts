@@ -8,6 +8,34 @@ export type Delivery = "Hybrid" | "In-person" | "Virtual";
 
 export type ProgramStatus = "Ready" | "In development";
 
+// Broad subject groupings used to browse the catalog by topic. Every item
+// below is tagged with one of these — kept to subjects the academy already
+// has real programs behind, rather than the full aspirational domain list.
+export type TopicId =
+  | "data-engineering"
+  | "ai-engineering"
+  | "ai-business"
+  | "analytics-bi"
+  | "data-governance"
+  | "software-product"
+  | "cross-functional";
+
+export interface Topic {
+  id: TopicId;
+  name: string;
+  blurb: string;
+}
+
+export const TOPICS: Topic[] = [
+  { id: "data-engineering", name: "Data Engineering", blurb: "Pipelines, cloud platforms, and infrastructure." },
+  { id: "ai-engineering", name: "AI Engineering", blurb: "Machine learning, generative AI, and MLOps." },
+  { id: "ai-business", name: "AI & Business Enablement", blurb: "Org-wide AI fluency, from briefings to build days." },
+  { id: "analytics-bi", name: "Data Analytics & BI", blurb: "BI platforms, statistics, and data storytelling." },
+  { id: "data-governance", name: "Data Governance", blurb: "Governance, MDM, and integration platforms." },
+  { id: "software-product", name: "Software & Product", blurb: "Engineering roles and delivery disciplines." },
+  { id: "cross-functional", name: "Cross-Functional Skills", blurb: "Electives that round out any track." },
+];
+
 export interface Module {
   name: string;
   category: ModuleCategory;
@@ -59,39 +87,48 @@ export interface Course {
   audience: string;
   delivery: Delivery;
   status: ProgramStatus;
+  topics: TopicId[];
 }
 
 // Standalone offerings — not part of a bootcamp or skill path.
 export const COURSES: Course[] = [
-  { name: "AI for Business", format: "Briefing", duration: "1-2 hrs", audience: "Leadership / Board", delivery: "Virtual", status: "Ready" },
-  { name: "AI Literacy", format: "Briefing", duration: "1-2 hrs", audience: "Any audience / all staff levels", delivery: "Virtual", status: "Ready" },
-  { name: "Claude Skills", format: "Briefing", duration: "1-2 hrs", audience: "Any audience / all staff levels", delivery: "Virtual", status: "Ready" },
-  { name: "AI Business Series", format: "Series", duration: "4-8 weeks", audience: "Technical / semi-technical cohort", delivery: "Virtual", status: "Ready" },
-  { name: "Ctrl+ship", format: "Sprint", duration: "1 full day", audience: "Technical practitioners", delivery: "In-person", status: "Ready" },
+  { name: "AI for Business", format: "Briefing", duration: "1-2 hrs", audience: "Leadership / Board", delivery: "Virtual", status: "Ready", topics: ["ai-business"] },
+  { name: "AI Literacy", format: "Briefing", duration: "1-2 hrs", audience: "Any audience / all staff levels", delivery: "Virtual", status: "Ready", topics: ["ai-business"] },
+  { name: "Claude Skills", format: "Briefing", duration: "1-2 hrs", audience: "Any audience / all staff levels", delivery: "Virtual", status: "Ready", topics: ["ai-business"] },
+  { name: "AI Business Series", format: "Series", duration: "4-8 weeks", audience: "Technical / semi-technical cohort", delivery: "Virtual", status: "Ready", topics: ["ai-business"] },
+  { name: "Ctrl+ship", format: "Sprint", duration: "1 full day", audience: "Technical practitioners", delivery: "In-person", status: "Ready", topics: ["ai-engineering"] },
 ];
 
 export interface CareerPath {
   name: string;
   moduleCategory?: ModuleCategory; // links to MODULES for teams with a mapped curriculum
   status: ProgramStatus;
+  topics: TopicId[];
 }
 
 // The academy's bootcamps — each one is a career path.
 export const CAREER_PATHS: CareerPath[] = [
-  { name: "AI Engineering", moduleCategory: "AI Engineering", status: "In development" },
-  { name: "Software Engineering", status: "In development" },
-  { name: "Full-Stack Development", status: "In development" },
-  { name: "Data Governance", status: "In development" },
-  { name: "Data Engineering", moduleCategory: "Data Engineering", status: "In development" },
-  { name: "ML Engineering (MLOps)", status: "In development" },
-  { name: "AI & Data Automation", status: "In development" },
-  { name: "Data Analytics", status: "In development" },
-  { name: "AI Product Builder (Claude)", status: "In development" },
-  { name: "Project Management with AI", status: "In development" },
+  { name: "AI Engineering", moduleCategory: "AI Engineering", status: "In development", topics: ["ai-engineering"] },
+  { name: "Software Engineering", status: "In development", topics: ["software-product"] },
+  { name: "Full-Stack Development", status: "In development", topics: ["software-product"] },
+  { name: "Data Governance", status: "In development", topics: ["data-governance"] },
+  { name: "Data Engineering", moduleCategory: "Data Engineering", status: "In development", topics: ["data-engineering"] },
+  { name: "ML Engineering (MLOps)", status: "In development", topics: ["ai-engineering"] },
+  { name: "AI & Data Automation", status: "In development", topics: ["ai-business"] },
+  { name: "Data Analytics", status: "In development", topics: ["analytics-bi"] },
+  { name: "AI Product Builder (Claude)", status: "In development", topics: ["ai-business"] },
+  { name: "Project Management with AI", status: "In development", topics: ["software-product"] },
 ];
 
 // The two module categories that aren't a full bootcamp become skill paths.
 export const SKILL_PATH_CATEGORIES: ModuleCategory[] = ["Advanced Analytics", "Cross-Track Electives"];
+
+export const SKILL_PATH_TOPICS: Record<ModuleCategory, TopicId[]> = {
+  "Data Engineering": ["data-engineering"],
+  "Advanced Analytics": ["analytics-bi"],
+  "AI Engineering": ["ai-engineering"],
+  "Cross-Track Electives": ["cross-functional"],
+};
 
 export const CATEGORY_META: Record<ModuleCategory | "AI", { color: string; blurb: string }> = {
   AI: {
@@ -116,16 +153,41 @@ export const CATEGORY_META: Record<ModuleCategory | "AI", { color: string; blurb
   },
 };
 
-export interface PlatformProvider {
+export interface TechTrack {
   name: string;
-  tracks: string[];
+  topics: TopicId[];
+}
+
+export interface TechProvider {
+  name: string;
+  tracks: TechTrack[];
 }
 
 // Technology-adoption tracks — training on the platforms clients have already licensed.
-export const PLATFORM_PROVIDERS: PlatformProvider[] = [
-  { name: "Dataiku", tracks: ["Foundation", "Advanced"] },
-  { name: "Informatica", tracks: ["Data Governance", "Data Engineering", "IDMC", "MDM"] },
-  { name: "Alteryx", tracks: ["Foundation", "Advanced"] },
+export const TECH_PROVIDERS: TechProvider[] = [
+  {
+    name: "Dataiku",
+    tracks: [
+      { name: "Foundation", topics: ["analytics-bi"] },
+      { name: "Advanced", topics: ["analytics-bi"] },
+    ],
+  },
+  {
+    name: "Informatica",
+    tracks: [
+      { name: "Data Governance", topics: ["data-governance"] },
+      { name: "Data Engineering", topics: ["data-engineering"] },
+      { name: "IDMC", topics: ["data-governance"] },
+      { name: "MDM", topics: ["data-governance"] },
+    ],
+  },
+  {
+    name: "Alteryx",
+    tracks: [
+      { name: "Foundation", topics: ["analytics-bi"] },
+      { name: "Advanced", topics: ["analytics-bi"] },
+    ],
+  },
 ];
 
 export function modulesFor(category: ModuleCategory): Module[] {
