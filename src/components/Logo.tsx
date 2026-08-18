@@ -1,12 +1,19 @@
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-baseline font-semibold tracking-tight text-xl select-none ${className}`}
+      className={`inline-flex items-center font-extrabold tracking-tight text-xl select-none ${className}`}
     >
       <span>maal</span>
-      <span className="relative inline-flex h-[0.62em] w-[0.62em] mx-[0.03em] translate-y-[0.02em] items-center justify-center">
-        <span className="absolute inset-0 rotate-45 rounded-[0.18em] border-[0.11em] border-teal-400" />
-      </span>
+      <svg
+        viewBox="0 0 60 40"
+        className="h-[0.72em] w-[1.15em] mx-[0.05em] -translate-y-[0.02em]"
+        aria-hidden
+      >
+        <circle cx="18.5" cy="6" r="2.5" fill="var(--teal-400)" />
+        <circle cx="34.5" cy="6" r="2.5" fill="var(--teal-400)" />
+        <circle cx="19" cy="23" r="13.5" fill="none" stroke="var(--teal-400)" strokeWidth="3.6" />
+        <circle cx="35" cy="23" r="13.5" fill="var(--teal-400)" />
+      </svg>
       <span>matiia</span>
     </span>
   );
