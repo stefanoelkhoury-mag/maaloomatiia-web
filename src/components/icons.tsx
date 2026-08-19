@@ -220,6 +220,16 @@ export function SlidersIcon(props: IconProps) {
   );
 }
 
+export function LandmarkIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 9.5 12 4l9 5.5" />
+      <path d="M4.5 9.5v9M8.5 9.5v9M15.5 9.5v9M19.5 9.5v9" />
+      <path d="M3 18.5h18" />
+    </svg>
+  );
+}
+
 export function ArrowRightIcon(props: IconProps) {
   return (
     <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>

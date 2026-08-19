@@ -153,27 +153,77 @@ export const CATEGORY_META: Record<ModuleCategory | "AI", { color: string; blurb
   },
 };
 
+export type TechCategory = "Data Analytics & BI" | "ML & AI Core" | "Data Engineering & Infrastructure";
+
+export const TECH_CATEGORY_TOPIC: Record<TechCategory, TopicId> = {
+  "Data Analytics & BI": "analytics-bi",
+  "ML & AI Core": "ai-engineering",
+  "Data Engineering & Infrastructure": "data-engineering",
+};
+
 export interface TechTrack {
+  // Empty name means the provider has no published tier breakdown yet —
+  // it renders as a single card for the provider itself.
   name: string;
   topics: TopicId[];
 }
 
 export interface TechProvider {
   name: string;
+  category: TechCategory;
   tracks: TechTrack[];
 }
 
-// Technology-adoption tracks — training on the platforms clients have already licensed.
+function untiered(topics: TopicId[]): TechTrack[] {
+  return [{ name: "", topics }];
+}
+
+// Technology-adoption tracks — training on the platforms clients have already
+// licensed. Source: Sheet2 "Tech Adoption Programs" (Data Analytics & BI /
+// ML & AI Core / Data Engineering & Infrastructure), plus Dataiku, Informatica,
+// and Alteryx tier breakdowns confirmed directly.
 export const TECH_PROVIDERS: TechProvider[] = [
+  // Data Analytics & BI
+  { name: "Cloudera", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Power BI", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Microstrategy", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Tableau", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Qlik", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Superset", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
+  { name: "Metabase / Grafana", category: "Data Analytics & BI", tracks: untiered(["analytics-bi"]) },
   {
-    name: "Dataiku",
+    name: "Alteryx",
+    category: "Data Analytics & BI",
     tracks: [
       { name: "Foundation", topics: ["analytics-bi"] },
       { name: "Advanced", topics: ["analytics-bi"] },
     ],
   },
+
+  // ML & AI Core
+  {
+    name: "Dataiku",
+    category: "ML & AI Core",
+    tracks: [
+      { name: "Foundation", topics: ["ai-engineering"] },
+      { name: "Advanced", topics: ["ai-engineering"] },
+    ],
+  },
+  { name: "DataRobot", category: "ML & AI Core", tracks: untiered(["ai-engineering"]) },
+  { name: "Databricks", category: "ML & AI Core", tracks: untiered(["ai-engineering"]) },
+  { name: "MLflow", category: "ML & AI Core", tracks: untiered(["ai-engineering"]) },
+  { name: "TensorFlow", category: "ML & AI Core", tracks: untiered(["ai-engineering"]) },
+  { name: "Hugging Face", category: "ML & AI Core", tracks: untiered(["ai-engineering"]) },
+
+  // Data Engineering & Infrastructure
+  { name: "AWS (Redshift, Glue)", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "Azure (Synapse, Data Factory)", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "GCP (BigQuery, Dataflow)", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "Snowflake", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "dbt", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
   {
     name: "Informatica",
+    category: "Data Engineering & Infrastructure",
     tracks: [
       { name: "Data Governance", topics: ["data-governance"] },
       { name: "Data Engineering", topics: ["data-engineering"] },
@@ -181,14 +231,20 @@ export const TECH_PROVIDERS: TechProvider[] = [
       { name: "MDM", topics: ["data-governance"] },
     ],
   },
-  {
-    name: "Alteryx",
-    tracks: [
-      { name: "Foundation", topics: ["analytics-bi"] },
-      { name: "Advanced", topics: ["analytics-bi"] },
-    ],
-  },
+  { name: "Debezium", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "Kafka", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
+  { name: "NiFi", category: "Data Engineering & Infrastructure", tracks: untiered(["data-engineering"]) },
 ];
+
+export const TECH_CATEGORIES: TechCategory[] = ["Data Analytics & BI", "ML & AI Core", "Data Engineering & Infrastructure"];
+
+export function providersFor(category: TechCategory): TechProvider[] {
+  return TECH_PROVIDERS.filter((p) => p.category === category);
+}
+
+export function trackCount(): number {
+  return TECH_PROVIDERS.reduce((n, p) => n + p.tracks.length, 0);
+}
 
 export function modulesFor(category: ModuleCategory): Module[] {
   return MODULES.filter((m) => m.category === category);

@@ -5,19 +5,20 @@ import { Footer } from "@/components/Footer";
 import { ContactBar } from "@/components/ContactBar";
 import { ProgramDetail } from "@/components/ProgramDetail";
 import { TECH_PROVIDERS } from "@/data/programs";
-import { findTechTrack, relatedRefs, slugify } from "@/lib/catalog";
+import { findTechTrack, relatedRefs, techTrackName, techTrackSlug } from "@/lib/catalog";
 
 export function generateStaticParams() {
-  return TECH_PROVIDERS.flatMap((provider) => provider.tracks.map((track) => ({ slug: slugify(`${provider.name}-${track.name}`) })));
+  return TECH_PROVIDERS.flatMap((provider) => provider.tracks.map((track) => ({ slug: techTrackSlug(provider.name, track.name) })));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const track = findTechTrack(slug);
   if (!track) return {};
+  const name = techTrackName(track.provider, track.track);
   return {
-    title: `${track.provider} ${track.track} — maaloomatiia`,
-    description: `${track.provider} ${track.track} technology-adoption track at maaloomatiia.`,
+    title: `${name} — maaloomatiia`,
+    description: `${name} technology-adoption track at maaloomatiia.`,
   };
 }
 
@@ -25,6 +26,8 @@ export default async function TechTrackPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const track = findTechTrack(slug);
   if (!track) notFound();
+
+  const name = techTrackName(track.provider, track.track);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -34,12 +37,16 @@ export default async function TechTrackPage({ params }: { params: Promise<{ slug
           kind="technology-tracks"
           kindLabel={track.provider}
           accentColor="#22c9ad"
-          name={`${track.provider} ${track.track}`}
-          description={`A technology-adoption track on ${track.provider}, ${track.track.toLowerCase()} level — for teams taking ownership of a platform they've already licensed.`}
+          name={name}
+          description={
+            track.track
+              ? `A technology-adoption track on ${track.provider}, ${track.track.toLowerCase()} level — for teams taking ownership of a platform they've already licensed.`
+              : `Technology-adoption training on ${track.provider} — for teams taking ownership of a platform they've already licensed.`
+          }
           stats={[
             { label: "Format", value: "Technology Track" },
             { label: "Provider", value: track.provider },
-            { label: "Level", value: track.track },
+            { label: "Category", value: track.category },
             { label: "Status", value: "Coming Soon" },
           ]}
           syllabusTitle="What this track covers"

@@ -1,27 +1,32 @@
-function PractitionerArt() {
+import { BuildingIcon, GlobeIcon, LandmarkIcon } from "../icons";
+
+const SECTORS = [
+  { icon: BuildingIcon, label: "Banks" },
+  { icon: LandmarkIcon, label: "Government bodies" },
+  { icon: GlobeIcon, label: "Telecom operators" },
+];
+
+function ProofPanel() {
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[var(--navy-950)] sm:aspect-[5/6]">
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse 70% 55% at 70% 30%, rgba(69,224,196,0.28), transparent 60%)" }}
-      />
-      <div aria-hidden className="absolute inset-x-10 top-10 flex flex-col gap-2.5">
-        <div className="h-2.5 w-3/4 rounded-full bg-white/10" />
-        <div className="h-2.5 w-1/2 rounded-full bg-white/10" />
+    <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[var(--navy-900)] p-8 sm:p-10">
+      <div>
+        <span className="rounded-full border border-teal-400/40 px-3.5 py-1.5 text-xs font-medium text-teal-300">Part of MDS Group</span>
+        <p className="mt-6 text-4xl font-semibold text-white sm:text-5xl">10+ years</p>
+        <p className="mt-1.5 text-sm text-ink-300">of delivery across the GCC.</p>
       </div>
-      <div aria-hidden className="absolute inset-x-8 bottom-10 grid grid-cols-3 gap-2">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square rounded-lg border border-white/10"
-            style={
-              i === 4
-                ? { background: "rgba(69,224,196,0.5)", boxShadow: "0 0 16px 2px rgba(69,224,196,0.5)" }
-                : { background: "rgba(255,255,255,0.04)" }
-            }
-          />
-        ))}
+
+      <div className="mt-10 border-t border-white/10 pt-6">
+        <p className="text-xs font-medium uppercase tracking-wide text-ink-500">Who they&apos;ve built for</p>
+        <div className="mt-4 flex flex-col gap-3.5">
+          {SECTORS.map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-teal-300">
+                <Icon width={16} height={16} />
+              </span>
+              <span className="text-sm text-white">{label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -38,7 +43,7 @@ export function WhoTeaches() {
     <section className="section-pad bg-[var(--navy-950)]">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
-          <PractitionerArt />
+          <ProofPanel />
 
           <div>
             <p className="eyebrow">Who Teaches</p>

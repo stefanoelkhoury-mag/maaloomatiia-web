@@ -10,9 +10,11 @@ import {
   MODULES,
   SKILL_PATH_CATEGORIES,
   SKILL_PATH_TOPICS,
+  TECH_CATEGORIES,
   TECH_PROVIDERS,
   TOPICS,
   modulesFor,
+  providersFor,
   totalHours,
   totalWeeks,
   type CareerPath,
@@ -20,7 +22,7 @@ import {
   type ModuleCategory,
   type TopicId,
 } from "@/data/programs";
-import { detailHref, slugify } from "@/lib/catalog";
+import { detailHref, slugify, techTrackName, techTrackSlug } from "@/lib/catalog";
 import {
   BriefcaseIcon,
   BookStackIcon,
@@ -168,18 +170,19 @@ function SkillPathCard({ category, highlighted }: { category: ModuleCategory; hi
   );
 }
 
-function TechTrackCard({ provider, track, highlighted }: { provider: string; track: string; highlighted: boolean }) {
-  const slug = slugify(`${provider}-${track}`);
+function TechTrackCard({ provider, track, category, highlighted }: { provider: string; track: string; category: string; highlighted: boolean }) {
+  const slug = techTrackSlug(provider, track);
+  const title = track || provider;
   return (
     <CardShell id={`path-${slug}`} highlighted={highlighted}>
       <span className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-wide text-teal-600">
         <span className="h-2 w-2 rounded-full bg-teal-500" />
-        {provider}
+        {track ? provider : category}
       </span>
       <Link href={detailHref("technology-tracks", slug)} className="mt-3 text-base font-semibold leading-snug text-[var(--foreground)] hover:text-teal-600">
-        {track}
+        {title}
       </Link>
-      <p className="mt-2 text-xs text-ink-500">Technology adoption track</p>
+      <p className="mt-2 text-xs text-ink-500">{track ? "Technology adoption track" : "Technology adoption"}</p>
       <StatRow left="Technology Track" right="Coming Soon" />
       <ViewDetailsLink href={detailHref("technology-tracks", slug)} />
     </CardShell>
@@ -264,7 +267,13 @@ function useCatalogItems(): FlatItem[] {
           type: "Technology Track",
           topics: track.topics,
           render: (highlighted) => (
-            <TechTrackCard key={`${provider.name}-${track.name}`} provider={provider.name} track={track.name} highlighted={highlighted} />
+            <TechTrackCard
+              key={`${provider.name}-${track.name}`}
+              provider={provider.name}
+              track={track.name}
+              category={provider.category}
+              highlighted={highlighted}
+            />
           ),
         });
       }
@@ -376,21 +385,50 @@ function TechnologyTracksBrowser({ highlight }: { highlight: string | null }) {
 
   if (!selectedProvider) {
     return (
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {TECH_PROVIDERS.map((provider) => (
-          <button
-            key={provider.name}
-            onClick={() => setSelectedProvider(provider.name)}
-            className="flex items-center gap-4 rounded-xl border border-black/10 px-5 py-4 text-left transition hover:border-teal-400/50 hover:bg-teal-400/5"
-          >
-            <MedalIcon width={22} height={22} className="shrink-0 text-teal-600" />
-            <span className="flex-1">
-              <span className="block text-sm font-semibold text-[var(--foreground)]">{provider.name}</span>
-              <span className="block text-xs text-ink-500">{provider.tracks.map((t) => t.name).join(" · ")}</span>
-            </span>
-            <span className="shrink-0 text-xs text-ink-500">{provider.tracks.length}</span>
-          </button>
-        ))}
+      <div className="mt-6 flex flex-col gap-10">
+        {TECH_CATEGORIES.map((category) => {
+          const providers = providersFor(category);
+          return (
+            <div key={category}>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-base font-semibold text-[var(--foreground)]">{category}</h3>
+                <span className="text-xs text-ink-500">{providers.length} platforms</span>
+              </div>
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {providers.map((provider) => {
+                  const tiered = provider.tracks.length > 1;
+                  const content = (
+                    <>
+                      <MedalIcon width={20} height={20} className="shrink-0 text-teal-600" />
+                      <span className="flex-1">
+                        <span className="block text-sm font-semibold text-[var(--foreground)]">{provider.name}</span>
+                        {tiered && <span className="block text-xs text-ink-500">{provider.tracks.map((t) => t.name).join(" · ")}</span>}
+                      </span>
+                      {tiered && <span className="shrink-0 text-xs text-ink-500">{provider.tracks.length}</span>}
+                    </>
+                  );
+                  return tiered ? (
+                    <button
+                      key={provider.name}
+                      onClick={() => setSelectedProvider(provider.name)}
+                      className="flex items-center gap-3.5 rounded-xl border border-black/10 px-5 py-4 text-left transition hover:border-teal-400/50 hover:bg-teal-400/5"
+                    >
+                      {content}
+                    </button>
+                  ) : (
+                    <Link
+                      key={provider.name}
+                      href={detailHref("technology-tracks", techTrackSlug(provider.name, ""))}
+                      className="flex items-center gap-3.5 rounded-xl border border-black/10 px-5 py-4 text-left transition hover:border-teal-400/50 hover:bg-teal-400/5"
+                    >
+                      {content}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -413,7 +451,8 @@ function TechnologyTracksBrowser({ highlight }: { highlight: string | null }) {
             key={track.name}
             provider={provider.name}
             track={track.name}
-            highlighted={highlight === `${provider.name} ${track.name}`}
+            category={provider.category}
+            highlighted={highlight === techTrackName(provider.name, track.name)}
           />
         ))}
       </div>

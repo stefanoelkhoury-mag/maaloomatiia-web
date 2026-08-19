@@ -6,9 +6,6 @@ import {
   SKILL_PATH_TOPICS,
   TECH_PROVIDERS,
   TOPICS,
-  modulesFor,
-  totalHours,
-  totalWeeks,
   type CareerPath,
   type Course,
   type ModuleCategory,
@@ -33,6 +30,16 @@ export const KIND_TAB: Record<ItemKind, { tab: string; label: string }> = {
 
 export function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+// Untiered providers (no published tier breakdown) slug on the provider name
+// alone; tiered ones (Dataiku, Informatica, Alteryx) combine provider + tier.
+export function techTrackSlug(provider: string, track: string): string {
+  return track ? slugify(`${provider}-${track}`) : slugify(provider);
+}
+
+export function techTrackName(provider: string, track: string): string {
+  return track ? `${provider} ${track}` : provider;
 }
 
 export interface CatalogRef {
@@ -62,8 +69,8 @@ export function allRefs(): CatalogRef[] {
     for (const track of provider.tracks) {
       refs.push({
         kind: "technology-tracks",
-        slug: slugify(`${provider.name}-${track.name}`),
-        name: `${provider.name} ${track.name}`,
+        slug: techTrackSlug(provider.name, track.name),
+        name: techTrackName(provider.name, track.name),
         topics: track.topics,
         color: "#22c9ad",
       });
@@ -84,11 +91,11 @@ export function findSkillPath(slug: string): ModuleCategory | undefined {
   return SKILL_PATH_CATEGORIES.find((c) => slugify(c) === slug);
 }
 
-export function findTechTrack(slug: string): { provider: string; track: string; topics: TopicId[] } | undefined {
+export function findTechTrack(slug: string): { provider: string; track: string; category: string; topics: TopicId[] } | undefined {
   for (const provider of TECH_PROVIDERS) {
     for (const track of provider.tracks) {
-      if (slugify(`${provider.name}-${track.name}`) === slug) {
-        return { provider: provider.name, track: track.name, topics: track.topics };
+      if (techTrackSlug(provider.name, track.name) === slug) {
+        return { provider: provider.name, track: track.name, category: provider.category, topics: track.topics };
       }
     }
   }
@@ -114,4 +121,4 @@ export function topicName(id: TopicId): string {
   return TOPICS.find((t) => t.id === id)?.name ?? id;
 }
 
-export { modulesFor, totalHours, totalWeeks };
+export { modulesFor, totalHours, totalWeeks, providersFor, trackCount } from "@/data/programs";

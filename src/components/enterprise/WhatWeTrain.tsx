@@ -1,41 +1,50 @@
 import Link from "next/link";
 import { OrbitIcon, TreeIcon } from "../icons";
-import { CAREER_PATHS, TECH_PROVIDERS, COURSES } from "@/data/programs";
+import { CAREER_PATHS, COURSES, SKILL_PATH_CATEGORIES, TECH_CATEGORIES, providersFor, trackCount } from "@/data/programs";
 
-function StepPyramid({ label }: { label: string }) {
-  const widths = [34, 46, 58, 70, 82, 94];
+function BreakdownBar({ rows, total }: { rows: { label: string; count: number }[]; total: number }) {
   return (
-    <div className="mt-8 flex flex-col items-center gap-4">
-      <div className="flex w-full flex-col items-center gap-1">
-        {widths.map((w, i) => (
-          <div key={i} className="h-2 rounded-[2px] bg-gradient-to-r from-teal-500/25 via-teal-400/60 to-teal-500/25" style={{ width: `${w}%` }} />
-        ))}
-      </div>
-      <p className="eyebrow text-[0.68rem] text-teal-300/90">{label}</p>
+    <div className="mt-7 flex flex-col gap-3">
+      {rows.map((row) => (
+        <div key={row.label}>
+          <div className="flex items-center justify-between text-xs text-ink-300">
+            <span>{row.label}</span>
+            <span className="font-medium text-white">{row.count}</span>
+          </div>
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-teal-400" style={{ width: `${Math.max((row.count / total) * 100, 6)}%` }} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-const TECH_EXAMPLES = TECH_PROVIDERS.map((p) => p.name);
-const SKILL_EXAMPLES = [...CAREER_PATHS.slice(0, 3).map((p) => p.name), COURSES[1].name];
+const TECH_ROWS = TECH_CATEGORIES.map((category) => ({ label: category, count: providersFor(category).length }));
+const SKILL_ROWS = [
+  { label: "Career paths", count: CAREER_PATHS.length },
+  { label: "Skill paths", count: SKILL_PATH_CATEGORIES.length },
+  { label: "Courses", count: COURSES.length },
+];
 
 const PATHS = [
   {
     icon: OrbitIcon,
     title: "Training on the platforms in your stack.",
-    label: "Dataiku",
     description:
-      "Adoption tracks scoped to your environment, your data, and the roles that touch it — from first login to advanced administration.",
-    examples: TECH_EXAMPLES,
+      "Adoption tracks scoped to your environment, your data, and the roles that touch it — from first login to advanced administration, across "
+      + `${trackCount()} tracks on ${TECH_CATEGORIES.length} platform categories.`,
+    rows: TECH_ROWS,
+    total: Math.max(...TECH_ROWS.map((r) => r.count)),
     cta: "Browse by technology",
     href: "/programs?tab=technology-tracks",
   },
   {
     icon: TreeIcon,
     title: "Training for the people around the stack.",
-    label: "Career & Skill Paths",
     description: "Programs beyond any single platform — bootcamps and skill paths for technical teams, and briefings for the people who lead them.",
-    examples: SKILL_EXAMPLES,
+    rows: SKILL_ROWS,
+    total: Math.max(...SKILL_ROWS.map((r) => r.count)),
     cta: "Browse skills & leadership programs",
     href: "/programs?tab=career-paths",
   },
@@ -51,24 +60,15 @@ export function WhatWeTrain() {
         </h2>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
-          {PATHS.map(({ icon: Icon, title, label, description, examples, cta, href }) => (
+          {PATHS.map(({ icon: Icon, title, description, rows, total, cta, href }) => (
             <div key={title} className="flex flex-col rounded-2xl border border-white/10 bg-[var(--navy-900)] p-8">
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-teal-400/40 text-teal-300">
                 <Icon width={20} height={20} />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-white">{title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-300">{description}</p>
 
-              <StepPyramid label={label} />
-
-              <p className="mt-7 text-sm leading-relaxed text-ink-300">{description}</p>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {examples.map((ex) => (
-                  <span key={ex} className="rounded-full border border-white/10 px-3 py-1 text-xs text-ink-300">
-                    {ex}
-                  </span>
-                ))}
-              </div>
+              <BreakdownBar rows={rows} total={total} />
 
               <Link
                 href={href}
