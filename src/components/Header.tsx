@@ -19,7 +19,7 @@ const NAV = [
   {
     label: "Solutions",
     items: [
-      { label: "For Enterprise", href: "#" },
+      { label: "For Enterprise", href: "/solutions/for-enterprise" },
       { label: "For National Capability Programs", href: "#" },
       { label: "For Education Partners", href: "#" },
       { label: "For Individuals", href: "#" },

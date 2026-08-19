@@ -1,4 +1,5 @@
 import { LinkNodesIcon, MedalIcon, GlobeIcon } from "./icons";
+import { FeatureGrid } from "./FeatureGrid";
 
 const FEATURES = [
   {
@@ -33,16 +34,8 @@ export function WhyItWorks() {
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="rounded-2xl border border-white/10 p-7">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-teal-400/40 text-teal-300">
-                <Icon width={20} height={20} />
-              </div>
-              <h3 className="mt-5 text-base font-semibold text-white">{title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-ink-300">{description}</p>
-            </div>
-          ))}
+        <div className="mt-14">
+          <FeatureGrid features={FEATURES} />
         </div>
 
         <div className="mt-24 text-center">

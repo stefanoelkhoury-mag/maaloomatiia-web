@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-const INTERESTS = [
+const DEFAULT_INTERESTS = [
   "Enterprise Training",
   "Higher Education Programs",
   "National Talent Programs",
@@ -10,8 +10,24 @@ const INTERESTS = [
   "Other",
 ];
 
-export function ReachOut() {
-  const [interest, setInterest] = useState(INTERESTS[0]);
+export interface ReachOutProps {
+  eyebrow?: string;
+  heading?: string;
+  highlight?: string;
+  intro?: string;
+  interests?: string[];
+  defaultInterest?: string;
+}
+
+export function ReachOut({
+  eyebrow = "Reach Out",
+  heading = "The first conversation costs nothing.",
+  highlight = "The capability gap does.",
+  intro = "Tell us who you're training, whether that's a team, a cohort, a workforce, or yourself. We'll point you to the right program in one call.",
+  interests = DEFAULT_INTERESTS,
+  defaultInterest,
+}: ReachOutProps) {
+  const [interest, setInterest] = useState(defaultInterest ?? interests[0]);
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -24,16 +40,11 @@ export function ReachOut() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="eyebrow">Reach Out</p>
+            <p className="eyebrow">{eyebrow}</p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight text-[var(--foreground)] sm:text-4xl">
-              The first conversation costs nothing.{" "}
-              <span className="text-teal-500">The capability gap does.</span>
+              {heading} <span className="text-teal-500">{highlight}</span>
             </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-ink-500 sm:text-base">
-              Tell us who you&apos;re training, whether that&apos;s a team, a
-              cohort, a workforce, or yourself. We&apos;ll point you to the
-              right program in one call.
-            </p>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-ink-500 sm:text-base">{intro}</p>
           </div>
 
           <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_20px_60px_-25px_rgba(11,18,32,0.35)] sm:p-8">
@@ -54,7 +65,7 @@ export function ReachOut() {
                     I&apos;m interested in...
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {INTERESTS.map((option) => {
+                    {interests.map((option) => {
                       const active = option === interest;
                       return (
                         <button
